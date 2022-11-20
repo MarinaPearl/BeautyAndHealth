@@ -1,4 +1,4 @@
-package ru.Demchuck.BeautyAndHealth;
+package ru.Demchuck.BeautyAndHealth.Parser;
 
 import lombok.Getter;
 
@@ -7,14 +7,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-public class Reader {
-    private FileReader fileReader;
+public class ReaderURL {
     private File file;
-    private BufferedReader bufferedReader;
     private final String fullPath = "src/main/resources/";
     @Getter private ArrayList<String> url;
 
-    public Reader(String path) {
+    public ReaderURL(String path) {
         path = fullPath + path;
         file = new File(path);
         url = new ArrayList<String>();
@@ -27,7 +25,7 @@ public class Reader {
                 url.add(str);
                 str = bufferedReader.readLine();
             }
-            url.remove(url.remove(url.size() - 1));
+            //url.remove(url.remove(url.size() - 1));
         }catch (Exception error) {
             error.printStackTrace();
         }
