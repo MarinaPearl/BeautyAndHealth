@@ -5,38 +5,42 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.Console;
-import java.io.PrintWriter;
+import java.io.*;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class App {
+    private static char delimiter = ';';
+    private static PrintWriter writer;
     public static void main(String[] args) {
         try {
-            PrintWriter writer = new PrintWriter("src/main/resources/input.txt", StandardCharsets.UTF_8);
-            Document document = Jsoup.connect("https://goldapple.ru/15082200004-hydra-24-regard-glacon").userAgent("Chrome/4.0.249.0 Safari/532.5").get();
-            Elements elements = document.select("#maincontent > div > div > section > section.pdp__extra > section.pdp__extra-right > section > section.pdp__info > div > ul > li.info-tabs__item._current > article > div > section.product-description__description");
-           // document.querySelector("#maincontent > div > div > section > section.pdp__extra > section.pdp__extra-right > section > section.pdp__info > div > ul > li.info-tabs__item._current > article > div > section.product-description__description")
-//            System.out.println(elements.text());
-            writer.println(elements.text());
-            //writer.println(elements.text());
-           // String e =  document.attr("div.page-wrapper");
-           // writer.println(e);
-
-           // writer.println(document.toString());
-           // writer.println(document.title());
-//            Elements e = document.select("ul.menu-burger__main-list");
-//            for (Element element : e) {
-//                Elements elements = element.select("a");
-//                //writer.println(elements.get(5).attr("href"));
-//                URIBuilder uriBuilder = new URIBuilder(elements.get(5).attr("href"));
-//                URL url = uriBuilder.build().toURL();
-//                System.out.println(url.toString());
-//               Document document1 = Jsoup.connect(url.toString()).get();
-//              // writer.println(document1.toString());
-//
-//            }
-           writer.close();
+            File file = new File("src/main/resources/eyeCream.txt");
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String str = bufferedReader.readLine();
+            ArrayList<String> url = new ArrayList<String>();
+            while (str != null) {
+                url.add(str);
+                str = bufferedReader.readLine();
+            }
+            url.remove(url.remove(url.size() - 1));
+            fileReader.close();
+            bufferedReader.close();
+            writer = new PrintWriter("src/main/resources/input.csv", StandardCharsets.UTF_8);
+            for (String link : url) {
+                Document document = Jsoup.connect(link).userAgent("Chrome/4.0.249.0 Safari/532.5").get();
+                Elements elements = document.select("#maincontent > div > div > section > section.pdp__extra > section.pdp__extra-right > section > section.pdp__info > div > ul > li.info-tabs__item._current > article > div > section.product-description__description");
+                Elements name = document.select("#maincontent > div > div > section > section.pdp__product > section.pdp__form-wrapper > div > header > p");
+                Elements brandName = document.select("#maincontent > div > div > section > section.pdp__product > section.pdp__form-wrapper > div > header > h1 > a");
+                Elements price = document.select("#maincontent > div > div > section > section.pdp__product > section.pdp__form-wrapper > div > form > div.pdp-form__price.pdp-price > div > div > span.special-price");
+                Elements volume = document.select("#maincontent > div > div > section > section.pdp__product > section.pdp__form-wrapper > div > form > div.pdp-form__swatches.pdp-form-swatches > div > div > span.subheading-1.swatch-simple__view");
+                Elements unitMeasurement = document.select("#maincontent > div > div > section > section.pdp__product > section.pdp__form-wrapper > div > form > div.pdp-form__swatches.pdp-form-swatches > div > div > span.subheading-1.swatch-simple__text");
+                writer.println(brandName.text() + delimiter + name.text() + delimiter + volume.text() + " " + unitMeasurement.text()
+                        + delimiter + price.text() + delimiter + elements.text());
+            }
+            writer.close();
         } catch (Exception error) {
             error.printStackTrace();
         }
